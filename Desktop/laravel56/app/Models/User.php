@@ -28,4 +28,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    //获取 到 用户 在 gravatar 中存放的 头像地址。 
+    public function gravatar($size = 'size'){
+        $hash = md5(strtolower(trim($this->attributes['email'])));
+        return "http://www.gravatar.com/avatar/".$hash."?s=".$size;
+    }
+
 }

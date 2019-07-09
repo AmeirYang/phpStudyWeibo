@@ -22,5 +22,8 @@ Route::get('/',['as'=>'home','uses'=>'StaticPagesController@forwardHomeView']);
 Route::get('/help',['as'=>'help','uses'=>'StaticPagesController@forwardHelpView']); 
 Route::get('/about',['as'=>'about','uses'=>'StaticPagesController@forwardAboutView']); 
 
-//注册使用的路由
+//跳转到 注册界面
 Route::get('/signup',['as'=>'signup','uses'=>'UsersController@create']);
+
+//实现注册功能
+Route::resource('/users', 'UsersController');

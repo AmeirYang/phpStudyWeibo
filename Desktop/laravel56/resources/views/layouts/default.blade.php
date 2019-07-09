@@ -5,6 +5,8 @@
         <link rel="stylesheet" href="/css/app.css">
         <link rel="stylesheet" href="/css/home.css">
         <link rel="stylesheet" href="/css/flooter.css">
+        <link rel="stylesheet" href="/css/show.css">
+        <link rel="stylesheet" href="/css/gravatar.css">
     </head>
     <body>  
           <!--引入顶部页面-->
