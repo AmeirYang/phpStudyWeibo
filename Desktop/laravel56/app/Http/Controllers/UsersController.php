@@ -16,4 +16,18 @@ class UsersController extends Controller
     public function show(User $user){  //当我们 发出 /user/{user}请求：/user/1 的时候，我们laravel会自动去数据库查询id为1的user，然后注入给$user。
         return view('users.show',compact('user')); //我们想show.blade.php页面中传递一个user实例。
     }
+
+    //添加用户
+    public function store(Request $request){
+         $this->validate($request,[
+             'name'=>'required|max:50',
+             'email'=>'required|email|unique:users|max:225',
+             'password'=>'required|confirmed|min:6'
+         ]);
+        return ;
+    }
+
+
+    
+
 }
