@@ -27,3 +27,10 @@ Route::get('/signup',['as'=>'signup','uses'=>'UsersController@create']);
 
 //实现注册功能
 Route::resource('/users', 'UsersController');
+
+//显示登录界面
+Route::get('login', 'SessionsController@create')->name('login');
+//发出登录请求
+Route::post('login', 'SessionsController@store')->name('login');
+//发出退出请求
+Route::delete('logout', 'SessionsController@destroy')->name('logout');

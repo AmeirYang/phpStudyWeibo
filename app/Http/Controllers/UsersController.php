@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -34,9 +35,10 @@ class UsersController extends Controller
             [
                 'name'=>$request->name,
                 'email'=>$request->email,
-                'password'=>bcrypt($request->pasword)
+                'password'=>bcrypt($request->password),
             ]
         );
+        Auth::login($user);
         //我们向 session  中存放  一个键值对，_messages.blade.php页面会通过 key 来 获取对应的 style.css 然后显示 value；
         //这个信息 只显示一次，也就是刷新页面或者到了下一个页面中就没有了不显示了。保存一个一次性的数据。 
         session()->flash('success','欢迎，您将在这里开启一段新的旅程~');

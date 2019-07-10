@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="/css/home.css">
         <link rel="stylesheet" href="/css/flooter.css">
         <link rel="stylesheet" href="/css/show.css">
+        <script type="text/javascript" src="/js/app.js"></script>
     </head>
     <body>  
           <!--引入顶部页面-->
