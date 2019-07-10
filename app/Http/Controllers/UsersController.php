@@ -8,6 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
+
+    //添加了这个中间件，用户从地址栏中输入http://localhost:8000/users/{user}/edit命令的时候就会被拦截跳转到login 用户1就不能修改用户2 的信息。
+    //为UsersController这个控制器添加一个 中间件，并为这个中间件设置动作。
+    public function __construct(){ //这个函数是PHP中的构造方法，在UsersController实例对象创建之前就会被调用执行。
+        //在创建 UsersController实例之前就 执行了 _construct构造方法了，然后就 将 中间件 绑定在了 该控制器上了。
+        //当 有  请求 被 该控制器接受到之后，就会被中间件所捕获，进入中间件中做处理。
+        //middleware('所使用的中间件名称','执行的动作');
+        $this->middleware('auth',[
+            'except'=>['show','create','store'] // show/create/store这三个请求时 不被 中间件 auth 所捕获的 。
+        ]);
+    }
+
+
     //用户注册功能模块
     public function create(){
         return view('users.create');
@@ -81,6 +94,5 @@ class UsersController extends Controller
         }
 
     }
-
 
 }

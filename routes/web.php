@@ -29,8 +29,8 @@ Route::get('/signup',['as'=>'signup','uses'=>'UsersController@create']);
 Route::resource('/users', 'UsersController');
 
 //显示登录界面
-Route::get('login', 'SessionsController@create')->name('login');
+Route::get('/login', 'SessionsController@create')->name('login');
 //发出登录请求
-Route::post('login', 'SessionsController@store')->name('login');
+Route::post('/login', 'SessionsController@store')->name('login');
 //发出退出请求
-Route::delete('logout', 'SessionsController@destroy')->name('logout');
+Route::delete('/logout', 'SessionsController@destroy')->name('logout');
