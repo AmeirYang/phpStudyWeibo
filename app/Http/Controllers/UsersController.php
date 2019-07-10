@@ -45,4 +45,42 @@ class UsersController extends Controller
         //验证成功，我们手动 将 页面 重定向到 用户信息显示界面。
         return redirect()->route('users.show',compact('user'));
     }
+
+    //更新用户信息
+    public function edit(User $user){
+
+        //接收到这个请求，就会请求转发到更新用户信息界面。
+        return view('users.edit',compact('user'));
+
+    }
+
+    public function update(User $user,Request $request){
+        //将更新用户信息表单 提交的 数据 进行数据格式的验证。 
+        //主要是验证 姓名 和  密码 ，因为我们不需要修改账号。所以我们不需要走数据库对比 。
+        $this->validate($request,[
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmed|min:6' //这里设置的密码时可以为空的。 
+            //当我们的用户只想要修改用户名的时候，这时候用户就不用再次输入密码和确认密码了，直接点击更新就行了。然后这样就只修改用户名。
+        ]);
+        //如果验证不同过，就将错误信息存放到 session中进行闪存了，然后 放进 $error 变量中，这个变量绑定了表单的视图。
+        
+        //因为 密码 可以为空 null，所以我们操作密码的时候需要进行判断一下了。
+        $data=[];
+        $data['name'] = $request->name ; 
+        if($request->password!=null){
+            $data['password'] = bcrypt($request->password) ; 
+            User::find($user->id)->update($data);
+            Auth::logout();
+            session()->flash('success','用户信息修改成功!');
+            return redirect()->route('login');
+        }else{
+            User::find($user->id)->update($data);
+            //当页面跳转到了show用户信息显示界面的时候的提示语。 
+            session()->flash('success','用户信息修改成功!');
+            return redirect()->route('users.show',Auth::user());
+        }
+
+    }
+
+
 }
