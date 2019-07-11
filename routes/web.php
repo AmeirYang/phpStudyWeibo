@@ -34,3 +34,6 @@ Route::get('/login', 'SessionsController@create')->name('login');
 Route::post('/login', 'SessionsController@store')->name('login');
 //发出退出请求
 Route::delete('/logout', 'SessionsController@destroy')->name('logout');
+
+//用户账户激活 所使用的 路由
+Route::get('/signup/confirm/{token}',['as'=>'confirm_email','UsersController@confirmEmail']);

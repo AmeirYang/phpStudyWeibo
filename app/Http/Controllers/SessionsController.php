@@ -33,11 +33,23 @@ class SessionsController extends Controller
         //上面的 验证 检查不通过就自动重定向到登录页面了。
         //格式正确而且不为空，那么就进行 后台 数据库 比对。 
        if(Auth::attempt($validate,$request->has('remember'))){ //前端的表单中提交了一个 remember 的参数。如果有这个参数说明开启了‘记住我’，如果没有这个参数就没有开启这个参数
-            //登录成功 之后的一系列操作。
-            //信息提示页面添加内容。
-            session()->flash("success","欢迎回来！");
-            //重定向到 指定的  用户信息显示页面的路由上。 并且给这个路由传递一个user用户的实例。通过 Auth::user()来获取当前登录的用户对象。
-            return redirect()->intended(route('users.show',[Auth::user()]));  //放回上一次尝试访问的页面，同时如果上次为null就访问里面的参数所代表的页面。
+           
+            //登录的时候 我们  需要 验证一下 该用户 是否成功激活 。
+            if(Auth::user()->activated){ //账号激活成功了。
+                    //登录成功 之后的一系列操作。
+                    //信息提示页面添加内容。
+                    session()->flash("success","欢迎回来！");
+                    //重定向到 指定的  用户信息显示页面的路由上。 并且给这个路由传递一个user用户的实例。通过 Auth::user()来获取当前登录的用户对象。
+                    return redirect()->intended(route('users.show',[Auth::user()]));  //放回上一次尝试访问的页面，同时如果上次为null就访问里面的参数所代表的页面。
+            }else{//没有激活
+                //将 用户的 会话 记录 和 登录状态 全部销毁。
+                Auth::logout();
+                //显示 未激活的 提示信息
+                session()->flash('warning','你的账号未激活，请检查邮箱中的注册邮件进行激活。');
+                return redirect('/'); //未激活的用户重定向 到 首页面 。
+            }
+
+          
        }else{
             //登录失败 之后的一系列操作。
             //信息提示页面添加内容。
