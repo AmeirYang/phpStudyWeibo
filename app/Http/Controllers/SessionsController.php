@@ -7,7 +7,14 @@ use Auth;
 
 class SessionsController extends Controller
 {
-    
+
+    //登录界面 只让 未登录的 用户 访问 。这里 是 设置 【只让未登录的用户访问登录界面】。
+    public function __construct(){
+        $this->middleware('guest',[
+            'only'=>['create']
+        ]);
+    }
+
     //显示登录界面，此时发出的是get请求。
     public function create(){
         return view('sessions.create');   
@@ -30,7 +37,7 @@ class SessionsController extends Controller
             //信息提示页面添加内容。
             session()->flash("success","欢迎回来！");
             //重定向到 指定的  用户信息显示页面的路由上。 并且给这个路由传递一个user用户的实例。通过 Auth::user()来获取当前登录的用户对象。
-            return redirect()->route('users.show',[Auth::user()]); 
+            return redirect()->intended(route('users.show',[Auth::user()]));  //放回上一次尝试访问的页面，同时如果上次为null就访问里面的参数所代表的页面。
        }else{
             //登录失败 之后的一系列操作。
             //信息提示页面添加内容。
@@ -48,5 +55,7 @@ class SessionsController extends Controller
         session()->flash("success","您已成功退出！");
         return redirect()->route('login'); //这是一个get请求，所以时显示登录页面
     }
+
+
 
 }

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+//这里是用来定义 授权 的 逻辑的 。
 class UserPolicy
 {
     use HandlesAuthorization;
