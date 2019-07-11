@@ -21,4 +21,11 @@ class UserPolicy
             "===" ： 全等，比较两个 变量的 类型是否相等，值是否相等 。 
         */
    }
+
+   //当 管理员 删除 人员信息的时候后 授权 逻辑。 
+   public function destroy(User $currentUser,User $user){
+        return $currentUser->is_admin && $currentUser->id !== $user->id ; 
+        //必须满足 当前用户是管理员 而且 操作的人员不是自己 。
+   }
+
 }

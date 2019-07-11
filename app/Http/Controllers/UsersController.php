@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class UsersController extends Controller
 {
 
+
     //添加了这个中间件，用户从地址栏中输入http://localhost:8000/users/{user}/edit命令的时候就会被拦截跳转到login 用户1就不能修改用户2 的信息。
     //为UsersController这个控制器添加一个 中间件，并为这个中间件设置动作。
     public function __construct(){ //这个函数是PHP中的构造方法，在UsersController实例对象创建之前就会被调用执行。
@@ -26,6 +27,18 @@ class UsersController extends Controller
         ]);
 
     }
+
+
+    //destroy 管理员授权成功之后，就可以指定下面的删除操作。
+    public function destroy(User $user){
+        //删除操作 只能 是 登录成功的 管理员才能继续操作。 
+        $this->authorize('destroy',$user);//如果 授权失败 返回 false ，页面显示的是：This action is unauthorized.
+        $user->delete();
+        session()->flash('success','用户删除成功!');
+        return back();
+    }
+
+
 
     //显示所有用户列表
     public function index(){
