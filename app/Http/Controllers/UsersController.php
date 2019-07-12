@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
+
 
 class UsersController extends Controller
 {
@@ -13,11 +16,11 @@ class UsersController extends Controller
     //添加了这个中间件，用户从地址栏中输入http://localhost:8000/users/{user}/edit命令的时候就会被拦截跳转到login 用户1就不能修改用户2 的信息。
     //为UsersController这个控制器添加一个 中间件，并为这个中间件设置动作。
     public function __construct(){ //这个函数是PHP中的构造方法，在UsersController实例对象创建之前就会被调用执行。
-        //在创建 UsersController实例之前就 执行了 _construct构造方法了，然后就 将 中间件 绑定在了 该控制器上了。
+        //在创建 UsersController\实例之前就 执行了 _construct构造方法了，然后就 将 中间件 绑定在了 该控制器上了。
         //当 有  请求 被 该控制器接受到之后，就会被中间件所捕获，进入中间件中做处理。
         //middleware('所使用的中间件名称','执行的动作');
         $this->middleware('auth',[
-            'except'=>['show','create','store','index'] // show/create/store这三个请求时 不被 中间件 auth 所捕获的 。
+            'except'=>['show','create','store','index','confirmEmail'] // show/create/store这三个请求时 不被 中间件 auth 所捕获的 。
         ]);
 
 
@@ -78,12 +81,10 @@ class UsersController extends Controller
                 'password'=>bcrypt($request->password),
             ]
         );
-        Auth::login($user);
-        //我们向 session  中存放  一个键值对，_messages.blade.php页面会通过 key 来 获取对应的 style.css 然后显示 value；
-        //这个信息 只显示一次，也就是刷新页面或者到了下一个页面中就没有了不显示了。保存一个一次性的数据。 
-        session()->flash('success','欢迎，您将在这里开启一段新的旅程~');
-        //验证成功，我们手动 将 页面 重定向到 用户信息显示界面。
-        return redirect()->route('users.show',compact('user'));
+        //调用邮件发送的方法来 发送邮件，邮件的内容已经被log 日志文件记录下来了。 
+        $this->sendEmailConfirmationTo($user);
+        session()->flash("success","激活右键已经发送至您的邮箱,请查收......");
+        return redirect("/");
     }
 
     //更新用户信息
@@ -128,6 +129,38 @@ class UsersController extends Controller
             return redirect()->route('users.show',Auth::user());
         }
 
+    }
+
+    //邮箱信息的视图，邮箱信息相关的数据数组，然后就是一个闭包回调，会返回一个邮件详情message
+    public function sendEmailConfirmationTo(User $user){
+        $view = 'emails.confirm' ;
+        $data = compact('user');
+        $from = '1351617602@qq.com' ;
+        $name = 'Ameir_Yang' ;
+        $to = $user->email;
+        $subject = '感谢注册 Weibo 应用！请确认你的邮箱。' ;   
+        Mail::send($view,$data,function($message)use($from,$name,$to,$subject){
+            $message->from($from,$name)->to($to)->subject($subject);
+        });  
+    }
+
+    //用户在 log文件中接收到 激活邮件，然后进行激活的操作。
+    /*
+        什么是激活？ 
+        创建用户实例的时候，我们会给用户生成一个 activation_token .然后我们给用户发送一封邮件，里面有一个连接，这个连接的参数里有这个activation_token，然后如果用户点击了这个超链接，说明用户执行了激活操作，那么我们就直接修改数据库的激活状态就行了。 
+    */
+    public function confirmEmail($token){
+
+        //找到对应 token 激活码 的  用户 修改用户 激活状态为true. 
+        $user=User::where('activation_token',$token)->firstOrFail();
+        $user->activated = true ; 
+        //这个项目 生成 激活码 时使用的 random（10）生成的，
+        $user->activation_token = null;
+        $user->save();
+        //修改用户 激活状态 为 true
+        Auth::login($user);
+        session()->flash('success','恭喜您，激活成功!');
+        return redirect()->route('users.show',[$user]);
     }
 
 }

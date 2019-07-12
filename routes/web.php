@@ -36,4 +36,4 @@ Route::post('/login', 'SessionsController@store')->name('login');
 Route::delete('/logout', 'SessionsController@destroy')->name('logout');
 
 //用户账户激活 所使用的 路由
-Route::get('/signup/confirm/{token}',['as'=>'confirm_email','UsersController@confirmEmail']);
+Route::get('/signup/confirm/{token}',['as'=>'confirm_email','uses'=>'UsersController@confirmEmail']);
